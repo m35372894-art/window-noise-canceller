@@ -1,4 +1,4 @@
-# ⚡ AeroSilence-ANC
+#  AeroSilence-ANC
 
 > Real-Time Active Noise Cancellation System for Open Windows  
 > An open-source hardware and software system designed to mitigate low-to-mid-frequency ambient noise (traffic, urban rumble, construction) through open window gaps using Filtered-X LMS (FXLMS) adaptive filtering.
@@ -9,7 +9,7 @@
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 AeroSilence-ANC allows maintaining continuous natural ventilation while actively attenuating incoming external acoustic noise by 18–25 dB.
 
@@ -17,7 +17,7 @@ Unlike passive acoustic barriers, the system operates on the principle of active
 
 ---
 
-## 🔬 System Architecture & Signal Flow
+## System Architecture & Signal Flow
 
 The core attenuator utilizes a Filtered-X Least Mean Square (FXLMS) algorithm with real-time secondary path modeling $S(z)$:
 
