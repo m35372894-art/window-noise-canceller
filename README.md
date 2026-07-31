@@ -1,44 +1,34 @@
-import numpy as np
+# ⚡ AeroSilence-ANC
 
-class ANCWindowSystem:
-    def init(self, filter_taps=32, mu=0.01):
-        """
-        Инициализация активной системы шумоподавления.
-        :param filter_taps: Количество коэффициентов адаптивного FIR-фильтра.
-        :param mu: Скорость обучения (step size) алгоритма LMS.
-        """
-        self.taps = filter_taps
-        self.mu = mu
-        self.weights = np.zeros(filter_taps)
-        self.buffer = np.zeros(filter_taps)
+> Real-Time Active Noise Cancellation System for Open Windows  
+> An open-source hardware and software system designed to mitigate low-to-mid-frequency ambient noise (traffic, urban rumble, construction) through open window gaps using Filtered-X LMS (FXLMS) adaptive filtering.
 
-    def process_sample(self, noise_sample: float, error_sample: float) -> float:
-        """
-        Обработка одного сэмпла аудио.
-        :param noise_sample: Сигнал с внешнего микрофона.
-        :param error_sample: Сигнал с внутреннего микрофона (ошибка).
-        :return: Сигнал противофазы для динамика.
-        """
-        # Сдвиг буфера и добавление нового сэмпла
-        self.buffer = np.roll(self.buffer, 1)
-        self.buffer[0] = noise_sample
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-green.svg)
+![Hardware: RPi_4_/_ESP32--S3](https://img.shields.io/badge/Hardware-RPi__4_%2F_ESP32--S3-orange.svg)
 
-        # Вычисление инвертированного сигнала (противофазы)
-        anti_noise = np.dot(self.weights, self.buffer)
+---
 
-        # Обновление весов фильтра (Normalized LMS)
-        norm = np.dot(self.buffer, self.buffer) + 1e-6
-        self.weights += (self.mu * error_sample * self.buffer) / norm
+## 🎯 Project Overview
 
-        return -anti_noise  # Инвертированный сигнал на динамик
+AeroSilence-ANC allows maintaining continuous natural ventilation while actively attenuating incoming external acoustic noise by 18–25 dB.
 
-# Пример эмуляции работы
-if name == "main":
-    anc = ANCWindowSystem(filter_taps=64, mu=0.05)
-    print("ANC Window Engine initialized successfully.")
-    
-    # Симуляция звука
-    dummy_noise = 0.8
-    dummy_error = 0.1
-    output_signal = anc.process_sample(dummy_noise, dummy_error)
-    print(f"Input Noise: {dummy_noise} -> Anti-Noise Output: {output_signal:.4f}")
+Unlike passive acoustic barriers, the system operates on the principle of active destructive wave interference. External acoustic waves are detected in real time, and anti-phase sound waves are emitted directly along the window aperture.
+
+---
+
+## 🔬 System Architecture & Signal Flow
+
+The core attenuator utilizes a Filtered-X Least Mean Square (FXLMS) algorithm with real-time secondary path modeling $S(z)$:
+
+`text
+[ Ambient Noise x(n) ] ──────► ( External Reference I2S Mic )
+                                           │
+                                           ▼
+                             [ DSP / AeroSilence Engine ]
+                                           │
+                                           ▼
+[ Anti-Noise Wave y(n) ] ───► ( Acoustic Transducers / Exciters ) ◄─── Destructive Interference
+                                           │
+                                           ▼
+                             ( Internal Error I2S Mic e(n) ) ──► ( Weight Update W )
